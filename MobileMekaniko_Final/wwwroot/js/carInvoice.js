@@ -50,7 +50,7 @@
     });
 
 
-    // Trigger updateTotals when SubTotal or AmountPaid input values change
+  // Trigger updateTotals when SubTotal or AmountPaid input values change
     $('#SubTotal, #AmountPaid').on('input', function () {
         updateTotals();
     });
@@ -128,6 +128,8 @@ function updateTotals() {
     var amountPaid = parseFloat($('#AmountPaid').val()) || 0;
     var isPaid = (amountPaid >= totalAmount && totalAmount > 0);
     $('#isPaid').val(isPaid);  // Set it to the boolean value directly
+
+
 
     // Set the display value for the user
     var paymentStatusDisplay = isPaid ? 'Paid' : 'Not Paid';
@@ -317,7 +319,7 @@ function AddInvoiceModal(carId) {
             $('#SubTotal').val(response.subTotal).prop('disabled', false);
             $('#TotalAmount').val(response.totalAmount).prop('disabled', false);
             $('#AmountPaid').val(response.amountPaid).prop('disabled', false);
-
+            $('#isPaid').val(response.isPaid);
 
             // show Date Added
             $('#DateAdded').closest('.date-added-container').show();
