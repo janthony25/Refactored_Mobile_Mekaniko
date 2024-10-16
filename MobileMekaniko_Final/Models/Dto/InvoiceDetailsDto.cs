@@ -32,13 +32,6 @@ namespace MobileMekaniko_Final.Models.Dto
         public string? PaymentTerm { get; set; }
         public string? Notes { get; set; }
 
-        [DisplayName("Labor Price")]
-        public decimal? LabourPrice { get; set; }
-        public decimal? Discount { get; set; }
-
-        [DisplayName("Shipping/Travel Fee")]
-        public decimal? ShippingFee { get; set; }
-
         [DisplayName("Sub Total")]
         public decimal? SubTotal { get; set; }
         [DisplayName("GST")]

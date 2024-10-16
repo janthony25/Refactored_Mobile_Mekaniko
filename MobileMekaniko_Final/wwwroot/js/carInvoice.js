@@ -35,9 +35,7 @@
         <div class="row invoice-item d-flex justify-content-between align-items-center mb-2">
             <div class="col-4"><input type="text" class="form-control item-name" placeholder="Item Name"></div>
             <div class="col-2"><input type="number" class="form-control item-quantity" placeholder="Quantity"></div>
-            <div class="col-3"><input type="number" class="form-control item-price" placeholder="Price"></div>
             <div class="col-3 d-flex">
-                <input type="number" class="form-control item-total me-2" placeholder="Total" readonly>
                 <button type="button" class="btn btn-danger remove-item"><i class="bi bi-trash3-fill"></i></button>
             </div>
         </div>
@@ -51,22 +49,9 @@
         updateTotals();
     });
 
-    // Update item total and invoice totals when quantity or price changes
-    $(document).on('input', '.item-quantity, .item-price', function () {
-        var item = $(this).closest('.invoice-item');
-        var quantity = parseFloat(item.find('.item-quantity').val()) || 0;
-        var price = parseFloat(item.find('.item-price').val()) || 0;
 
-        // Calculate the item total
-        var total = quantity * price;
-        item.find('.item-total').val(total.toFixed(2));
-
-        // Update the overall invoice totals
-        updateTotals();
-    });
-
-    // Input event to update totals when labor price, discount, shipping fee, or amount paid changes
-    $('#LabourPrice, #Discount, #ShippingFee, #AmountPaid').on('input', function () {
+    // Trigger updateTotals when SubTotal or AmountPaid input values change
+    $('#SubTotal, #AmountPaid').on('input', function () {
         updateTotals();
     });
 
@@ -121,34 +106,21 @@
 
 // Function to update invoice totals
 function updateTotals() {
-    var subTotal = 0;
+    // Retrieve manually inputted subtotal
+    var subTotal = parseFloat($('#SubTotal').val()) || 0;
 
-    // Calculate subtotal by summing up all item totals
-    $('.item-total').each(function () {
-        subTotal += parseFloat($(this).val()) || 0;
-    });
+    // Calculate 15% GST (TaxAmount) based on the subtotal
+    var gst = subTotal * 0.15;
 
-    // Retrieve additional values
-    var laborPrice = parseFloat($('#LabourPrice').val()) || 0;
-    var discount = parseFloat($('#Discount').val()) || 0;
-    var shippingFee = parseFloat($('#ShippingFee').val()) || 0;
-
-    // Calculate the taxable amount
-    var taxableAmount = (subTotal + laborPrice + shippingFee) - discount;
-
-    // Calculate 15% GST (TaxAmount) based on the taxable amount
-    var gst = taxableAmount * 0.15;
-
-    // Calculate the total amount by adding GST to the taxable amount
-    var totalAmount = taxableAmount + gst;
+    // Calculate the total amount by adding GST to the subtotal
+    var totalAmount = subTotal + gst;
 
     // Ensure that the total amount is not negative
     if (totalAmount < 0) {
         totalAmount = 0;
     }
 
-    // Update subtotal, tax amount, and total amount fields
-    $('#SubTotal').val(subTotal.toFixed(2));
+    // Update tax amount and total amount fields
     $('#TaxAmount').val(gst.toFixed(2)); // Update the GST field
     $('#TotalAmount').val(totalAmount.toFixed(2)); // Update the total amount field
 
@@ -161,6 +133,7 @@ function updateTotals() {
     var paymentStatusDisplay = isPaid ? 'Paid' : 'Not Paid';
     $('#isPaidDisplay').val(paymentStatusDisplay);
 }
+
 
 
 function UpdateDeleteInvoiceModal(invoiceId, action) {
@@ -192,9 +165,6 @@ function UpdateDeleteInvoiceModal(invoiceId, action) {
                 $('#IssueName').val(response.issueName).prop('readonly', false);
                 $('#PaymentTerm').val(response.paymentTerm).prop('readonly', false);
                 $('#Notes').val(response.notes).prop('readonly', false);
-                $('#LabourPrice').val(response.labourPrice).prop('readonly', false);
-                $('#Discount').val(response.discount).prop('readonly', false);
-                $('#ShippingFee').val(response.shippingFee).prop('readonly', false);
                 $('#SubTotal').val(response.subTotal).prop('readonly', true);
                 $('#TaxAmount').val(response.taxAmount).prop('readonly', true);
                 $('#TotalAmount').val(response.totalAmount).prop('readonly', true);
@@ -224,8 +194,6 @@ function UpdateDeleteInvoiceModal(invoiceId, action) {
                         <div class="row invoice-item-header d-flex justify-content-between align-items-center mb-2">
                             <div class="col-4"><strong>Item Name</strong></div>
                             <div class="col-2"><strong>Quantity</strong></div>
-                            <div class="col-3"><strong>Price</strong></div>
-                            <div class="col-3"><strong>Total Price</strong></div>
                         </div>
                     `;
                     $('#invoiceItems').append(headers);
@@ -239,12 +207,6 @@ function UpdateDeleteInvoiceModal(invoiceId, action) {
                             </div>
                             <div class="col-2">
                                 <input type="number" class="form-control item-quantity" placeholder="Quantity" value="${item.quantity}" readonly>
-                            </div>
-                            <div class="col-3">
-                                <input type="number" class="form-control item-price" placeholder="Price" value="${item.itemPrice}" readonly>
-                            </div>
-                            <div class="col-3 d-flex">
-                                <input type="number" class="form-control item-total me-2" placeholder="Total" value="${item.itemTotal}" readonly>
                             </div>
                         </div>
                         `);
@@ -272,9 +234,6 @@ function UpdateDeleteInvoiceModal(invoiceId, action) {
                 $('#IssueName').val(response.issueName).prop('readonly', true);
                 $('#PaymentTerm').val(response.paymentTerm).prop('readonly', true);
                 $('#Notes').val(response.notes).prop('readonly', true);
-                $('#LabourPrice').val(response.labourPrice).prop('readonly', true);
-                $('#Discount').val(response.discount).prop('readonly', true);
-                $('#ShippingFee').val(response.shippingFee).prop('readonly', true);
                 $('#SubTotal').val(response.subTotal).prop('readonly', true);
                 $('#TaxAmount').val(response.taxAmount).prop('readonly', true);
                 $('#TotalAmount').val(response.totalAmount).prop('readonly', true);
@@ -300,8 +259,6 @@ function UpdateDeleteInvoiceModal(invoiceId, action) {
                         <div class="row invoice-item-header d-flex justify-content-between align-items-center mb-2">
                             <div class="col-4"><strong>Item Name</strong></div>
                             <div class="col-2"><strong>Quantity</strong></div>
-                            <div class="col-3"><strong>Price</strong></div>
-                            <div class="col-3"><strong>Total Price</strong></div>
                         </div>
                     `;
                     $('#invoiceItems').append(headers);
@@ -315,12 +272,6 @@ function UpdateDeleteInvoiceModal(invoiceId, action) {
                             </div>
                             <div class="col-2">
                                 <input type="number" class="form-control item-quantity" placeholder="Quantity" value="${item.quantity}" readonly>
-                            </div>
-                            <div class="col-3">
-                                <input type="number" class="form-control item-price" placeholder="Price" value="${item.itemPrice}" readonly>
-                            </div>
-                            <div class="col-3 d-flex">
-                                <input type="number" class="form-control item-total me-2" placeholder="Total" value="${item.itemTotal}" readonly>
                             </div>
                         </div>
                         `);
@@ -363,9 +314,6 @@ function AddInvoiceModal(carId) {
             $('#IssueName').val(response.issueName).prop('disabled', false);
             $('#PaymentTerm').val(response.paymentTerm).prop('disabled', false);
             $('#Notes').val(response.notes).prop('disabled', false);
-            $('#LabourPrice').val(response.labourPrice).prop('disabled', false);
-            $('#Discount').val(response.discount).prop('disabled', false);
-            $('#ShippingFee').val(response.shippingFee).prop('disabled', false);
             $('#SubTotal').val(response.subTotal).prop('disabled', false);
             $('#TotalAmount').val(response.totalAmount).prop('disabled', false);
             $('#AmountPaid').val(response.amountPaid).prop('disabled', false);
@@ -407,9 +355,6 @@ function AddInvoice() {
         issueName: $('#IssueName').val(),
         paymentTerm: $('#PaymentTerm').val(),
         notes: $('#Notes').val(),
-        laborPrice: parseFloat($('#LabourPrice').val()) || 0,
-        discount: parseFloat($('#Discount').val()) || 0,
-        shippingFee: parseFloat($('#ShippingFee').val()) || 0,
         subTotal: parseFloat($('#SubTotal').val()) || 0,
         totalAmount: parseFloat($('#TotalAmount').val()) || 0,
         amountPaid: parseFloat($('#AmountPaid').val()) || 0,
@@ -421,9 +366,7 @@ function AddInvoice() {
     $('.invoice-item').each(function () {
         let item = {
             itemName: $(this).find('.item-name').val(),
-            quantity: parseFloat($(this).find('.item-quantity').val()) || 0,
-            itemPrice: parseFloat($(this).find('.item-price').val()) || 0,
-            itemTotal: parseFloat($(this).find('.item-total').val()) || 0
+            quantity: parseFloat($(this).find('.item-quantity').val()) || 0
         };
         formData.invoiceItems.push(item);
     });
@@ -470,9 +413,6 @@ function UpdateInvoice() {
         issueName: $('#IssueName').val(),
         paymentTerm: $('#PaymentTerm').val(),
         notes: $('#Notes').val(),
-        laborPrice: parseFloat($('#LabourPrice').val()) || 0,
-        discount: parseFloat($('#Discount').val()) || 0,
-        shippingFee: parseFloat($('#ShippingFee').val()) || 0,
         subTotal: parseFloat($('#SubTotal').val()) || 0,
         taxAmount: parseFloat($('#TaxAmount').val()) || 0,
         totalAmount: parseFloat($('#TotalAmount').val()) || 0,
@@ -547,9 +487,6 @@ function HideModal() {
     $('#IssueName').val('');
     $('#PaymentTerm').val('');
     $('#Notes').val('');
-    $('#LabourPrice').val('');
-    $('#Discount').val('');
-    $('#ShippingFee').val('');
     $('#SubTotal').val('');
     $('#TotalAmount').val('');
     $('#AmountPaid').val('');

@@ -32,9 +32,6 @@ namespace MobileMekaniko_Final.Repository
                     DueDate = dto.DueDate,
                     PaymentTerm = dto.PaymentTerm,
                     Notes = dto.Notes,
-                    LaborPrice = dto.LaborPrice,
-                    Discount = dto.Discount,
-                    ShippingFee = dto.ShippingFee,
                     SubTotal = dto.SubTotal,
                     TaxAmount = dto.TaxAmount,
                     TotalAmount = dto.TotalAmount,
@@ -53,8 +50,6 @@ namespace MobileMekaniko_Final.Repository
                 {
                     ItemName = item.ItemName,
                     Quantity = item.Quantity,
-                    ItemPrice = item.ItemPrice,
-                    ItemTotal = item.ItemTotal,
                     InvoiceId = invoice.InvoiceId
                 }).ToList();
 
@@ -258,9 +253,6 @@ namespace MobileMekaniko_Final.Repository
                         IssueName = i.IssueName,
                         PaymentTerm = i.PaymentTerm,
                         Notes = i.Notes,
-                        LabourPrice = i.LaborPrice,
-                        Discount = i.Discount,
-                        ShippingFee = i.ShippingFee,
                         SubTotal = i.SubTotal,
                         TaxAmount = i.TaxAmount,
                         TotalAmount = i.TotalAmount,
@@ -270,9 +262,7 @@ namespace MobileMekaniko_Final.Repository
                         {
                             InvoiceItemId = ii.InvoiceItemId,
                             ItemName = ii.ItemName,
-                            Quantity = ii.Quantity,
-                            ItemPrice = ii.ItemPrice,
-                            ItemTotal = ii.ItemPrice
+                            Quantity = ii.Quantity
                         }).ToList()
                     }).FirstOrDefaultAsync();
 
@@ -406,9 +396,6 @@ namespace MobileMekaniko_Final.Repository
                 invoice.IssueName = dto.IssueName;
                 invoice.PaymentTerm = dto.PaymentTerm;
                 invoice.Notes = dto.Notes;
-                invoice.LaborPrice = dto.LaborPrice;
-                invoice.Discount = dto.Discount;
-                invoice.ShippingFee = dto.ShippingFee;
                 invoice.SubTotal = dto.SubTotal;
                 invoice.TaxAmount = dto.TaxAmount;
                 invoice.TotalAmount = dto.TotalAmount;

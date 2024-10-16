@@ -135,18 +135,14 @@ namespace MobileMekaniko_Final.Services
             table.Borders.Color = Colors.Black;
             table.AddColumn(Unit.FromCentimeter(9));
             table.AddColumn(Unit.FromCentimeter(3));
-            table.AddColumn(Unit.FromCentimeter(3));
-            table.AddColumn(Unit.FromCentimeter(3));
 
-            AddTableHeader(table, "Item Name", "Quantity", "Price", "Total");
+            AddTableHeader(table, "Item Name / Description", "Quantity");
 
             foreach (var item in invoice.InvoiceItemDto)
             {
                 var row = table.AddRow();
                 row.Cells[0].AddParagraph(item.ItemName);
                 row.Cells[1].AddParagraph(item.Quantity.ToString());
-                row.Cells[2].AddParagraph(item.ItemPrice.ToString("C"));
-                row.Cells[3].AddParagraph(item.ItemTotal.ToString("C"));
             }
 
             // Add space below the item table without adding a bordered row
@@ -163,9 +159,6 @@ namespace MobileMekaniko_Final.Services
 
             // Add each row as a label followed by the value to keep them together closely
             AddTableRowWithLabelAndValue(table, "Subtotal: ", invoice.SubTotal?.ToString("C") ?? "N/A");
-            AddTableRowWithLabelAndValue(table, "Labor Price: ", invoice.LabourPrice?.ToString("C") ?? "N/A");
-            AddTableRowWithLabelAndValue(table, "Discount: ", invoice.Discount?.ToString("C") ?? "N/A");
-            AddTableRowWithLabelAndValue(table, "Shipping Fee: ", invoice.ShippingFee?.ToString("C") ?? "N/A");
             AddTableRowWithLabelAndValue(table, "GST: ", invoice.TaxAmount?.ToString("C") ?? "N/A");
             AddTableRowWithLabelAndValue(table, "Total Amount: ", invoice.TotalAmount?.ToString("C") ?? "N/A");
             AddTableRowWithLabelAndValue(table, "Amount Paid: ", invoice.AmountPaid?.ToString("C") ?? "N/A");

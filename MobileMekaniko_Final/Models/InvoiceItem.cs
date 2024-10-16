@@ -5,8 +5,6 @@
         public int InvoiceItemId { get; set; }
         public required string ItemName { get; set; }
         public required int Quantity { get; set; }
-        public required decimal ItemPrice { get; set; }
-        public decimal? ItemTotal { get; set; }
         public DateTime DateAdded { get; set; } = DateTime.Now;
         public DateTime? DateEdited { get; set; }
 
