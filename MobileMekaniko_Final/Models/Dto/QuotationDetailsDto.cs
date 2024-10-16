@@ -29,13 +29,6 @@ namespace MobileMekaniko_Final.Models.Dto
         public string? IssueName { get; set; }
         public string? Notes { get; set; }
 
-        [DisplayName("Labor Price")]
-        public decimal? LaborPrice { get; set; }
-        public decimal? Discount { get; set; }
-
-        [DisplayName("Shipping/Travel Fee")]
-        public decimal? ShippingFee { get; set; }
-
         [DisplayName("Sub Total")]
         public decimal? SubTotal { get; set; }
 

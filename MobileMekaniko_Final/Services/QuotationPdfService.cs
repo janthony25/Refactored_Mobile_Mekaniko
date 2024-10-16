@@ -123,18 +123,14 @@ namespace MobileMekaniko_Final.Services
             table.Borders.Color = Colors.Black;
             table.AddColumn(Unit.FromCentimeter(9));
             table.AddColumn(Unit.FromCentimeter(3));
-            table.AddColumn(Unit.FromCentimeter(3));
-            table.AddColumn(Unit.FromCentimeter(3));
 
-            AddTableHeader(table, "Item Name", "Quantity", "Price", "Total");
+            AddTableHeader(table, "Item Name / Description", "Quantity");
 
             foreach (var item in quotation.QuotationItemDto)
             {
                 var row = table.AddRow();
                 row.Cells[0].AddParagraph(item.ItemName);
                 row.Cells[1].AddParagraph(item.Quantity.ToString());
-                row.Cells[2].AddParagraph(item.ItemPrice.ToString("C"));
-                row.Cells[3].AddParagraph(item.ItemTotal?.ToString("C"));
             }
 
             section.AddParagraph().Format.SpaceAfter = 20;
@@ -148,9 +144,6 @@ namespace MobileMekaniko_Final.Services
             table.AddColumn(Unit.FromCentimeter(10));
 
             AddTableRowWithLabelAndValue(table, "Subtotal: ", quotation.SubTotal?.ToString("C") ?? "N/A");
-            AddTableRowWithLabelAndValue(table, "Labor Price: ", quotation.LaborPrice?.ToString("C") ?? "N/A");
-            AddTableRowWithLabelAndValue(table, "Discount: ", quotation.Discount?.ToString("C") ?? "N/A");
-            AddTableRowWithLabelAndValue(table, "Shipping Fee: ", quotation.ShippingFee?.ToString("C") ?? "N/A");
             AddTableRowWithLabelAndValue(table, "GST: ", quotation.TaxAmount?.ToString("C") ?? "N/A");
             AddTableRowWithLabelAndValue(table, "Total Amount: ", quotation.TotalAmount?.ToString("C") ?? "N/A");
 

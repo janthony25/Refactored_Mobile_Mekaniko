@@ -27,9 +27,6 @@ namespace MobileMekaniko_Final.Repository
                 {
                     IssueName = dto.IssueName,
                     Notes = dto.Notes,
-                    LaborPrice = dto.LaborPrice,
-                    Discount = dto.Discount,
-                    ShippingFee = dto.ShippingFee,
                     SubTotal = dto.SubTotal,
                     TaxAmount = dto.TaxAmount,
                     TotalAmount = dto.TotalAmount,
@@ -46,8 +43,6 @@ namespace MobileMekaniko_Final.Repository
                 {
                     ItemName = qi.ItemName,
                     Quantity = qi.Quantity,
-                    ItemPrice = qi.ItemPrice,
-                    ItemTotal = qi.ItemTotal,
                     QuotationId = quotation.QuotationId
                 }).ToList();
 
@@ -193,9 +188,6 @@ namespace MobileMekaniko_Final.Repository
                         DateEdited = q.DateEdited,
                         IssueName = q.IssueName,
                         Notes = q.Notes,
-                        LaborPrice = q.LaborPrice,
-                        Discount = q.Discount,
-                        ShippingFee = q.ShippingFee,
                         SubTotal = q.SubTotal,
                         TaxAmount = q.TaxAmount,
                         TotalAmount = q.TotalAmount,
@@ -204,9 +196,7 @@ namespace MobileMekaniko_Final.Repository
                         {
                             QuotationItemId = qi.QuotationItemId,
                             ItemName = qi.ItemName,
-                            Quantity = qi.Quantity,
-                            ItemPrice = qi.ItemPrice,
-                            ItemTotal = qi.ItemTotal
+                            Quantity = qi.Quantity
                         }).ToList()
                     }).FirstOrDefaultAsync();
 
@@ -331,9 +321,6 @@ namespace MobileMekaniko_Final.Repository
 
                 quotation.IssueName = dto.IssueName;
                 quotation.Notes = dto.Notes;
-                quotation.LaborPrice = dto.LaborPrice;
-                quotation.Discount = dto.Discount;
-                quotation.ShippingFee = dto.ShippingFee;
                 quotation.SubTotal = dto.SubTotal;
                 quotation.TaxAmount = dto.TaxAmount;
                 quotation.TotalAmount = dto.TotalAmount;

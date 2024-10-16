@@ -73,9 +73,7 @@
         <div class="row quotation-item d-flex justify-content-between align-items-center mb-2">
             <div class="col-4"><input type="text" class="form-control item-name" placeholder="Item Name"></div>
             <div class="col-2"><input type="number" class="form-control item-quantity" placeholder="Quantity"></div>
-            <div class="col-3"><input type="number" class="form-control item-price" placeholder="Price"></div>
             <div class="col-3 d-flex">
-                <input type="number" class="form-control item-total me-2" placeholder="Total" readonly>
                 <button type="button" class="btn btn-danger remove-item"><i class="bi bi-trash3-fill"></i></button>
             </div>
         </div>
@@ -89,22 +87,10 @@
         updateTotals();
     });
 
-    // Update item total and quotation totals when quantity or price changes
-    $(document).on('input', '.item-quantity, .item-price', function () {
-        var item = $(this).closest('.quotation-item');
-        var quantity = parseFloat(item.find('.item-quantity').val()) || 0;
-        var price = parseFloat(item.find('.item-price').val()) || 0;
-
-        // Calculate the item total
-        var total = quantity * price;
-        item.find('.item-total').val(total.toFixed(2));
-
-        // Update the overall quotation totals
-        updateTotals();
-    });
+  
 
     // Input event to update totals when labor price, discount, shipping fee, or amount paid changes
-    $('#LaborPrice, #Discount, #ShippingFee, #AmountPaid').on('input', function () {
+    $('#SubTotal, #AmountPaid').on('input', function () {
         updateTotals();
     });
 
@@ -114,46 +100,26 @@
 
 // Function to update quotation totals
 function updateTotals() {
-    var subTotal = 0;
+    // Retrieve manually inputted subtotal
+    var subTotal = parseFloat($('#SubTotal').val()) || 0;
 
-    // Calculate subtotal by summing up all item totals
-    $('.item-total').each(function () {
-        subTotal += parseFloat($(this).val()) || 0;
-    });
+    // Calculate 15% GST (TaxAmount) based on the subtotal
+    var gst = subTotal * 0.15;
 
-    // Retrieve additional values
-    var laborPrice = parseFloat($('#LaborPrice').val()) || 0;
-    var discount = parseFloat($('#Discount').val()) || 0;
-    var shippingFee = parseFloat($('#ShippingFee').val()) || 0;
-
-    // Calculate the taxable amount
-    var taxableAmount = (subTotal + laborPrice + shippingFee) - discount;
-
-    // Calculate 15% GST (TaxAmount) based on the taxable amount
-    var gst = taxableAmount * 0.15;
-
-    // Calculate the total amount by adding GST to the taxable amount
-    var totalAmount = taxableAmount + gst;
+    // Calculate the total amount by adding GST to the subtotal
+    var totalAmount = subTotal + gst;
 
     // Ensure that the total amount is not negative
     if (totalAmount < 0) {
         totalAmount = 0;
     }
 
-    // Update subtotal, tax amount, and total amount fields
-    $('#SubTotal').val(subTotal.toFixed(2));
-    $('#TaxAmount').val(gst.toFixed(2)); // Update the GST field
-    $('#TotalAmount').val(totalAmount.toFixed(2)); // Update the total amount field
-
-    // Determine and update payment status
-    var amountPaid = parseFloat($('#AmountPaid').val()) || 0;
-    var isPaid = (amountPaid >= totalAmount && totalAmount > 0);
-    $('#isPaid').val(isPaid);  // Set it to the boolean value directly
-
-    // Set the display value for the user
-    var paymentStatusDisplay = isPaid ? 'Paid' : 'Not Paid';
-    $('#isPaidDisplay').val(paymentStatusDisplay);
+    // Update the TaxAmount and TotalAmount fields
+    $('#TaxAmount').val(gst.toFixed(2));  // Update the GST field
+    $('#TotalAmount').val(totalAmount.toFixed(2));  // Update the total amount field
 }
+
+
 
 // Add Quotation Modal
 function AddQuotationModal(carId) {
@@ -187,9 +153,6 @@ function AddQuotationModal(carId) {
 
             $('#IssueName').val(response.issueName).prop('readonly', false);
             $('#Notes').val(response.notes).prop('readonly', false);
-            $('#SubTotal').val(response.subTotal).prop('readonly', true);
-            $('#LaborPrice').val(response.laborPrice).prop('readonly', false);
-            $('#Discount').val(response.discount).prop('readonly', false);
             $('#ShippingFee').val(response.shippingFee).prop('readonly', false);
             $('#TotalAmount').val(response.totalAmount).prop('readonly', true);
         },
@@ -221,11 +184,7 @@ function UpdateDeleteQuotationModal(quotationId, action) {
                 $('#QuotationId').val(response.quotationId).prop('readonly', true);
                 $('#IssueName').val(response.issueName).prop('readonly', false);
                 $('#Notes').val(response.notes).prop('readonly', false);
-                $('#SubTotal').val(response.subTotal).prop('readonly', true);
-                $('#LaborPrice').val(response.laborPrice).prop('readonly', false);
-                console.log('labor price = ', response.laborPrice);
-                $('#Discount').val(response.discount).prop('readonly', false);
-                $('#ShippingFee').val(response.shippingFee).prop('readonly', false);
+                $('#SubTotal').val(response.subTotal).prop('readonly', false);
                 $('#TaxAmount').val(response.taxAmount).prop('readonly', true);
                 $('#TotalAmount').val(response.totalAmount).prop('readonly', true);
 
@@ -253,8 +212,6 @@ function UpdateDeleteQuotationModal(quotationId, action) {
                         <div class="row invoice-item-header d-flex justify-content-between align-items-center mb-2">
                             <div class="col-4"><strong>Item Name</strong></div>
                             <div class="col-2"><strong>Quantity</strong></div>
-                            <div class="col-3"><strong>Price</strong></div>
-                            <div class="col-3"><strong>Total Price</strong></div>
                         </div>
                     `;
                     $('#quotationItems').append(headers);
@@ -268,12 +225,6 @@ function UpdateDeleteQuotationModal(quotationId, action) {
                             </div>
                             <div class="col-2">
                                 <input type="number" class="form-control item-quantity" placeholder="Quantity" value="${item.quantity}" readonly>
-                            </div>
-                            <div class="col-3">
-                                <input type="number" class="form-control item-price" placeholder="Price" value="${item.itemPrice}" readonly>
-                            </div>
-                            <div class="col-3 d-flex">
-                                <input type="number" class="form-control item-total me-2" placeholder="Total" value="${item.itemTotal}" readonly>
                             </div>
                         </div>
                         `);
@@ -295,9 +246,6 @@ function UpdateDeleteQuotationModal(quotationId, action) {
                 $('#IssueName').val(response.issueName).prop('readonly', true);
                 $('#Notes').val(response.notes).prop('readonly', true);
                 $('#SubTotal').val(response.subTotal).prop('readonly', true);
-                $('#LaborPrice').val(response.laborPrice).prop('readonly', true);
-                $('#Discount').val(response.discount).prop('readonly', true);
-                $('#ShippingFee').val(response.shippingFee).prop('readonly', true);
                 $('#TaxAmount').val(response.taxAmount).prop('readonly', true);
                 $('#TotalAmount').val(response.totalAmount).prop('readonly', true);
 
@@ -325,8 +273,6 @@ function UpdateDeleteQuotationModal(quotationId, action) {
                         <div class="row invoice-item-header d-flex justify-content-between align-items-center mb-2">
                             <div class="col-4"><strong>Item Name</strong></div>
                             <div class="col-2"><strong>Quantity</strong></div>
-                            <div class="col-3"><strong>Price</strong></div>
-                            <div class="col-3"><strong>Total Price</strong></div>
                         </div>
                     `;
                     $('#quotationItems').append(headers);
@@ -340,12 +286,6 @@ function UpdateDeleteQuotationModal(quotationId, action) {
                             </div>
                             <div class="col-2">
                                 <input type="number" class="form-control item-quantity" placeholder="Quantity" value="${item.quantity}" readonly>
-                            </div>
-                            <div class="col-3">
-                                <input type="number" class="form-control item-price" placeholder="Price" value="${item.itemPrice}" readonly>
-                            </div>
-                            <div class="col-3 d-flex">
-                                <input type="number" class="form-control item-total me-2" placeholder="Total" value="${item.itemTotal}" readonly>
                             </div>
                         </div>
                         `);
@@ -375,9 +315,6 @@ function AddQuotation() {
     let formData = {
         IssueName: $('#IssueName').val(),
         Notes: $('#Notes').val(),
-        laborPrice: parseFloat($('#LaborPrice').val()) || 0,
-        discount: parseFloat($('#Discount').val()) || 0,
-        shippingFee: parseFloat($('#ShippingFee').val()) || 0,
         subTotal: parseFloat($('#SubTotal').val()) || 0,
         taxAmount: parseFloat($('#TaxAmount').val()) || 0,
         totalAmount: parseFloat($('#TotalAmount').val()) || 0,
@@ -388,9 +325,7 @@ function AddQuotation() {
     $('.quotation-item').each(function () {
         let item = {
             ItemName: $(this).find('.item-name').val() || "",
-            Quantity: parseFloat($(this).find('.item-quantity').val()) || 0,
-            ItemPrice: parseFloat($(this).find('.item-price').val()) || 0,
-            ItemTotal: parseFloat($(this).find('.item-total').val()) || 0
+            Quantity: parseFloat($(this).find('.item-quantity').val()) || 0
         };
         formData.quotationItems.push(item);
     });
@@ -433,9 +368,6 @@ function UpdateQuotation() {
     let formData = {
         issueName: $('#IssueName').val(),
         notes: $('#Notes').val(),
-        laborPrice: parseFloat($('#LaborPrice').val()) || 0,
-        discount: parseFloat($('#Discount').val()) || 0,
-        shippingFee: parseFloat($('#ShippingFee').val()) || 0,
         subTotal: parseFloat($('#SubTotal').val()) || 0,
         taxAmount: parseFloat($('#TaxAmount').val()) || 0,
         totalAmount: parseFloat($('#TotalAmount').val()) || 0,
@@ -502,9 +434,6 @@ function HideModal() {
     $('#IssueName').val('');
     $('#Notes').val('');
     $('#SubTotal').val('');
-    $('#LaborPrice').val('');
-    $('#Discount').val('');
-    $('#ShippingFee').val('');
     $('#TotalAmount').val('');
 
     $('#IssueNameError').text('');
